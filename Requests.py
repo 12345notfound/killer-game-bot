@@ -1,33 +1,41 @@
 import sqlite3
 
 
-def kill_commit(name_killer, name_victim, date):
+# kill = {"name_killer": str,
+#         "name_victim": str,
+#         "date": str}
+
+
+def kill_commit(kills):
     """Комитит убийство"""
 
     connection = sqlite3.connect("Killer_database.db")
     cursor = connection.cursor()
 
-    try:
-        cursor.execute("SELECT * FROM all_players WHERE full_name = ?", (name_killer,))
-        id_killer = cursor.fetchall()[0][0]
-        cursor.execute("SELECT * FROM all_players WHERE full_name = ?", (name_victim,))
-        id_victim = cursor.fetchall()[0][0]
-    except IndexError:
-        print(f"Неверный запрос kill {name_killer, name_victim, date}: одного из людей не существует")
-        return
+    for kill in kills:
+        name_killer, name_victim, date = kill["name_killer"], kill["name_victim"], kill["date"]
+        try:
+            cursor.execute("SELECT * FROM all_players WHERE full_name = ?", (name_killer,))
+            id_killer = cursor.fetchall()[0][0]
+            cursor.execute("SELECT * FROM all_players WHERE full_name = ?", (name_victim,))
+            id_victim = cursor.fetchall()[0][0]
+        except IndexError:
+            print(f"Неверный запрос kill {name_killer, name_victim, date}: одного из людей не существует")
+            return
 
-    cursor.execute("SELECT id_victim FROM all_kill WHERE id_victim = ?", (id_victim,))
-    if cursor.fetchone() is None:
-        cursor.execute('INSERT INTO all_kill (id_killer, id_victim, date) VALUES (?, ?, ?)',
-                       (id_killer, id_victim, date))
-    else:
-        print(f"Неверный запрос kill {name_killer, name_victim, date}: {name_victim} - убит")
+        cursor.execute("SELECT id_victim FROM all_kill WHERE id_victim = ?", (id_victim,))
+        if cursor.fetchone() is None:
+            cursor.execute('INSERT INTO all_kill (id_killer, id_victim, date) VALUES (?, ?, ?)',
+                           (id_killer, id_victim, date))
+        else:
+            print(f"Неверный запрос kill {name_killer, name_victim, date}: {name_victim} - убит")
 
     connection.commit()
     connection.close()
 
 
-kill_commit("ятченко кирилл вечаславович", "русанов евгений васильевич", "34.56.2025")
+kill_commit(
+    [{"name_killer": "ятченко кирилл вечаславович", "name_victim": "русанов евгений васильевич", "date": "34.56.2025"}])
 
 
 def fine_commit(name_player, fine, comment):
