@@ -80,49 +80,58 @@ def update_fine_points(id_game, cursor):
 def update_point(id_game, today, cursor):
     """Обновляет все поинты игроков"""
 
-    update_death(id_game, cursor)
-    update_fine_points(id_game, cursor)
-
-    cursor.execute("SELECT * FROM all_kill WHERE id_game = ?", (id_game,))
-    kills = cursor.fetchall()
-
-    cursor.execute("SELECT * FROM all_players WHERE id_game = ?", (id_game,))
-    players = cursor.fetchall()
-
-    murder_graph = {}
-    for player in players:
-        murder_graph[player[0]] = {"kills": [], "death": player[6], "point": 0}
-    for kill in kills:
-        murder_graph[kill[1]]["kills"].append(kill[2:4])
-
-    def counter_point(name_player):
-        """Подсчитывает баллы игрока"""
-
-        full_point_player = 0
-        # Очки за выживание
-        full_point_player += point_day(name_player, today, cursor)
-        # Очки за убийства
-        kills_player = murder_graph[name_player]['kills']
-        death_player = murder_graph[name_player]['death']
-        full_point_player += counter_kill_point(kills_player, death_player, today)
-        # Треть очков игроков
-        for victim in kills_player:
-            name_victim = victim[0]
-            counter_point(name_victim)
-            full_point_player += murder_graph[name_victim]['point'] // 3
-        murder_graph[name_player]['point'] = full_point_player
+    cursor.execute("SELECT * FROM all_game WHERE id = ?", (id_game,))
+    if cursor.fetchone() is None:
+        print(f"id.{id_game} - не существует")
         return
 
-    for player in players:
-        if murder_graph[player[0]]['death'] is None:
-            counter_point(player[0])
+    try:
+        update_death(id_game, cursor)
+        update_fine_points(id_game, cursor)
 
-    for player in players:
-        cursor.execute('UPDATE all_players SET points = ? WHERE full_name = ?',
-                       (murder_graph[player[0]]['point'], player[0]))
-        print(f"{player[0]}, {murder_graph[player[0]]['point']}")
+        cursor.execute("SELECT * FROM all_kill WHERE id_game = ?", (id_game,))
+        kills = cursor.fetchall()
 
-    connection.commit()
+        cursor.execute("SELECT * FROM all_players WHERE id_game = ?", (id_game,))
+        players = cursor.fetchall()
+
+        murder_graph = {}
+        for player in players:
+            murder_graph[player[0]] = {"kills": [], "death": player[6], "point": 0}
+        for kill in kills:
+            murder_graph[kill[1]]["kills"].append(kill[2:4])
+
+        def counter_point(name_player):
+            """Подсчитывает баллы игрока"""
+
+            full_point_player = 0
+            # Очки за выживание
+            full_point_player += point_day(name_player, today, cursor)
+            # Очки за убийства
+            kills_player = murder_graph[name_player]['kills']
+            death_player = murder_graph[name_player]['death']
+            full_point_player += counter_kill_point(kills_player, death_player, today)
+            # Треть очков игроков
+            for victim in kills_player:
+                name_victim = victim[0]
+                counter_point(name_victim)
+                full_point_player += murder_graph[name_victim]['point'] // 3
+            murder_graph[name_player]['point'] = full_point_player
+            return
+
+        for player in players:
+            if murder_graph[player[0]]['death'] is None:
+                counter_point(player[0])
+
+        for player in players:
+            cursor.execute('UPDATE all_players SET points = ? WHERE full_name = ?',
+                           (murder_graph[player[0]]['point'], player[0]))
+            print(f"{player[0]}, {murder_graph[player[0]]['point']}")
+
+        connection.commit()
+    except ValueError:
+        print(f"{today} - неверная дата")
+        return
 
 
 update_point(20251, "2025-08-17", cursor)
