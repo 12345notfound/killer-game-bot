@@ -129,6 +129,7 @@ def update_point(id_game, today, cursor):
             print(f"{player[0]}, {murder_graph[player[0]]['point']}")
 
         connection.commit()
+
     except ValueError:
         print(f"{today} - неверная дата")
         return
