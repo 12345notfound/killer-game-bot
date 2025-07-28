@@ -19,8 +19,8 @@ def initializing_game(info_game: dict, cursor):
     # Добавляет в список новую игру (если ее еще не существует)
     cursor.execute("SELECT id FROM all_game WHERE id = ?", (info_game["id"],))
     if cursor.fetchone() is None:
-        cursor.execute('INSERT INTO all_game (id, name, number_updates, status) VALUES (?, ?, ?, ?)',
-                       (info_game["id"], info_game["name"], 0, 'Actively'))
+        cursor.execute('INSERT INTO all_game (id, name, number_updates) VALUES (?, ?, ?)',
+                       (info_game["id"], info_game["name"], 0))
     else:
         raise IdError(f'Игра c id {info_game["id"]} уже существует')
 
@@ -52,5 +52,20 @@ initializing_game({"id": 20250,
                    "name": "Младшие",
                    "players": [{"full_name": "кравченко кирилл вечаславович", "class": 11},
                                {"full_name": "замоторин евгений васильевич", "class": 5}]}, cursor)
+
+
+def end_game(id_game, cursor):
+    """Удаление всех данных об игре"""
+
+    cursor.execute('DELETE FROM all_game WHERE id = ?', (id_game,))
+    cursor.execute('DELETE FROM all_players WHERE id_game = ?', (id_game,))
+    cursor.execute('DELETE FROM all_kill WHERE id_game = ?', (id_game,))
+    cursor.execute('DELETE FROM fines WHERE id_game = ?', (id_game,))
+
+    connection.commit()
+    return
+
+
+# end_game(20251, cursor)
 
 connection.close()
