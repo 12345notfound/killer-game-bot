@@ -1,9 +1,9 @@
+# import sqlite3
 import random
-import sqlite3
 from CustomException import *
 
-connection = sqlite3.connect("Killer_database.db")
-cursor = connection.cursor()
+# connection = sqlite3.connect("Killer_database.db")
+# cursor = connection.cursor()
 
 
 # info_game = {"id": int,
@@ -13,8 +13,10 @@ cursor = connection.cursor()
 # info_players = {"full_name": str,
 #                 "class": int}
 
-def initializing_game(info_game: dict, cursor):
+def initializing_game(info_game: dict, connection):
     """инициализирует новую игру"""
+
+    cursor = connection.cursor()
 
     # Добавляет в список новую игру (если ее еще не существует)
     cursor.execute("SELECT id FROM all_game WHERE id = ?", (info_game["id"],))
@@ -54,8 +56,10 @@ def initializing_game(info_game: dict, cursor):
 #                                {"full_name": "замоторин евгений васильевич", "class": 5}]}, cursor)
 
 
-def end_game(id_game, cursor):
+def end_game(id_game, connection):
     """Удаление всех данных об игре"""
+
+    cursor = connection.cursor()
     cursor.execute("SELECT id FROM all_game WHERE id = ?", (id_game,))
     if cursor.fetchone() is None:
         raise IdError(f'Игра c id {id_game} не существует, операция удаления прервана')
@@ -71,4 +75,4 @@ def end_game(id_game, cursor):
 
 # end_game(20251, cursor)
 
-connection.close()
+# connection.close()

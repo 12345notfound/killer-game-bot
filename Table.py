@@ -1,14 +1,15 @@
+# import sqlite3
 import pandas as pd
-import sqlite3
 from CustomException import *
 
-connection = sqlite3.connect("Killer_database.db")
-cursor = connection.cursor()
+# connection = sqlite3.connect("Killer_database.db")
+# cursor = connection.cursor()
 
 
-def ranking_table(id_game, name_user, cursor):
+def ranking_table(id_game, name_user, connection):
     """Лидерборд"""
 
+    cursor = connection.cursor()
     cursor.execute("SELECT * FROM all_game WHERE id = ?", (id_game,))
     if cursor.fetchone() is None:
         raise IdError(f"id.{id_game} - не существует")
@@ -24,12 +25,13 @@ def ranking_table(id_game, name_user, cursor):
     return f"ranking_{name_user}.xlsx"
 
 
-ranking_table(20251, "sdf", cursor)
+# ranking_table(20251, "sdf", cursor)
 
 
-def order_table(id_game, name_user, cursor):
+def order_table(id_game, name_user, connection):
     """Таблица заказов игроков"""
 
+    cursor = connection.cursor()
     cursor.execute("SELECT * FROM all_game WHERE id = ?", (id_game,))
     if cursor.fetchone() is None:
         raise IdError(f"id.{id_game} - не существует")
@@ -45,5 +47,5 @@ def order_table(id_game, name_user, cursor):
     return f"order_{name_user}.xlsx"
 
 
-order_table(20251, "sdf", cursor)
-connection.close()
+# order_table(20251, "sdf", cursor)
+# connection.close()

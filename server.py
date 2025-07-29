@@ -11,7 +11,6 @@ from telegram import ReplyKeyboardMarkup, InputMediaPhoto, MenuButtonCommands, M
 
 from conv_handlers import add_all_handlers
 
-
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG
 )

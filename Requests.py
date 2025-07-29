@@ -1,17 +1,18 @@
-import sqlite3
+# import sqlite3
 from CustomException import *
 
-connection = sqlite3.connect("Killer_database.db")
-cursor = connection.cursor()
+# connection = sqlite3.connect("Killer_database.db")
+# cursor = connection.cursor()
 
 
 # kill = {"name_killer": str,
 #         "name_victim": str}
 
 
-def kill_commit(kill, cursor):
+def kill_commit(kill, connection):
     """Комитит убийство"""
 
+    cursor = connection.cursor()
     name_killer, name_victim = kill["name_killer"], kill["name_victim"]
 
     cursor.execute("SELECT * FROM all_players WHERE full_name = ? OR full_name = ?", (name_killer, name_victim))
@@ -45,9 +46,10 @@ def kill_commit(kill, cursor):
 #         "comment": str}
 
 
-def fine_commit(fine, cursor):
+def fine_commit(fine, connection):
     """Комитит штраф"""
 
+    cursor = connection.cursor()
     name_player, fine_point, comment = fine["name_player"], fine["fine_point"], fine["comment"]
 
     cursor.execute("SELECT * FROM all_players WHERE full_name = ?", (name_player,))
@@ -65,4 +67,4 @@ def fine_commit(fine, cursor):
 
 # fine_commit({"name_player": "ятченко кирилл вечаславович", "fine_point": -3, "comment": "потерял бумажку"}, cursor)
 
-connection.close()
+# connection.close()

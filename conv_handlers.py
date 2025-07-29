@@ -12,7 +12,6 @@ from Table import ranking_table, order_table
 from CustomException import *
 import sqlite3
 
-
 connection = sqlite3.connect("Killer_database.db")
 cursor = connection.cursor()
 
@@ -88,7 +87,7 @@ async def new_game_state3(update: telegram.Update, context):
                  "start_day": str(update.message.date)[:10].replace('-', '.'),
                  "players": [{"full_name": elem[0], "class": elem[1]} for elem in file]
                  }
-    initializing_game(game_info, cursor)
+    initializing_game(game_info, connection)
     await update.message.reply_text("Игра создана!"
                                     " Для регистрации килла используйте /kill, для завершения дня /update_day")
     return ConversationHandler.END
@@ -102,7 +101,8 @@ async def delete_game_state0(update: telegram.Update, context):
 async def delete_game_state1(update: telegram.Update, context):
     game_id = update.message.text.strip()
     context.chat_data["delete_game_id"] = game_id
-    await update.message.reply_text("Вы уверены, что хотите удалить эту игру?", reply_markup=ReplyKeyboardMarkup(["Да", "Нет"]))
+    await update.message.reply_text("Вы уверены, что хотите удалить эту игру?",
+                                    reply_markup=ReplyKeyboardMarkup(["Да", "Нет"]))
     return 2
 
 
@@ -112,11 +112,11 @@ async def delete_game_state2(update: telegram.Update, context):
         await update.message.reply_text("Операция удаления прервана.")
         return ConversationHandler.END
     try:
-        end_game(context.chat_data["delete_game_id"], cursor)
+        end_game(context.chat_data["delete_game_id"], connection)
     except IdError as e:
         await update.message.reply_text(str(e.args[0]))
         return ConversationHandler.END
-    await update.message.reply_text(f"Игра с id {context.chat_data["delete_game_id"]} удалена")
+    await update.message.reply_text(f"Игра с id {context.chat_data['delete_game_id']} удалена")
     return ConversationHandler.END
 
 
@@ -126,7 +126,7 @@ async def register_kill(update: telegram.Update, context):
     killer, victim = text[0], text[1]
     # ----- к этому моменту в killer и target лежат соответственно киллер и жертва -----
     try:
-        kill_commit({"name_killer": killer, "name_victim": victim}, cursor)
+        kill_commit({"name_killer": killer, "name_victim": victim}, connection)
         await update.message.reply_text(f"все окей, {killer} - {victim}")
     except (PlayerError, ImpossibleRequestError) as e:
         await update.message.reply_text(str(e.args[0]))
@@ -136,7 +136,7 @@ async def register_fine(update: telegram.Update, context):
     text = update.message.text[5:].strip().split('-')
     player, fine, comment = text[0], text[1], text[2]
     try:
-        fine_commit({"name_player": player, "fine_point": fine, "comment": comment}, cursor)
+        fine_commit({"name_player": player, "fine_point": fine, "comment": comment}, connection)
         await update.message.reply_text(f"Штраф записан: {text}")
     except PlayerError as e:
         await update.message.reply_text(str(e.args[0]))
@@ -186,7 +186,7 @@ async def update_day_state1(update: telegram.Update, context):
     game_id = update.message.text.strip()
     # ----- здесь нужно вызвать функцию для обновления дня с аргументом game_name -----
     try:
-        update_point(game_id, cursor)
+        update_point(game_id, connection)
         await update.message.reply_text("День успешно обновлен, используйте /leaderboard,"
                                         " чтобы получить список очков игроков")
     except IdError as e:
@@ -203,7 +203,7 @@ async def leaderboard_state1(update: telegram.Update, context):
     game_id = update.message.text.strip()
     name_user = update.effective_user.id
     try:
-        filename = "downloads/" + ranking_table(game_id, f"{str(name_user)}_{game_id}", cursor)
+        filename = "downloads/" + ranking_table(game_id, f"{str(name_user)}_{game_id}", connection)
         await update.message.reply_document(document=open(filename, 'rb'))
         os.remove(filename)
     except IdError as e:
@@ -220,7 +220,7 @@ async def orderboard_state1(update: telegram.Update, context):
     game_id = update.message.text.strip()
     name_user = update.effective_user.id
     try:
-        filename = "downloads/" + order_table(game_id, f"{str(name_user)}_{game_id}", cursor)
+        filename = "downloads/" + order_table(game_id, f"{str(name_user)}_{game_id}", connection)
         await update.message.reply_document(document=open(filename, 'rb'))
         os.remove(filename)
     except IdError as e:

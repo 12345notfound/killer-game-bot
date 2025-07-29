@@ -1,14 +1,16 @@
-import sqlite3
-import datetime
+# import sqlite3
+# import datetime
 from CustomException import *
 
-connection = sqlite3.connect("Killer_database.db")
-cursor = connection.cursor()
+
+# connection = sqlite3.connect("Killer_database.db")
+# cursor = connection.cursor()
 
 
-def point_day(name_player, today_number_update, cursor):
+def point_day(name_player, today_number_update, connection):
     """Вычисляет очки за выживание"""
 
+    cursor = connection.cursor()
     cursor.execute("SELECT death_number_updates FROM all_players WHERE full_name = ?", (name_player,))
     death_number_updates = cursor.fetchone()[0]
     if death_number_updates is None:
@@ -34,9 +36,10 @@ def counter_kill_point(kills, death_number_updates_killer, today_number_update):
     return kill_point
 
 
-def update_death(id_game, cursor):
+def update_death(id_game, connection):
     """Обновляет даты смерти"""
 
+    cursor = connection.cursor()
     cursor.execute("SELECT * FROM all_kill WHERE id_game = ?", (id_game,))
     kills = cursor.fetchall()
 
@@ -47,9 +50,10 @@ def update_death(id_game, cursor):
     return
 
 
-def update_fine_points(id_game, cursor):
+def update_fine_points(id_game, connection):
     """Обновляет штрафные очки"""
 
+    cursor = connection.cursor()
     cursor.execute("SELECT * FROM fines WHERE id_game = ?", (id_game,))
     fines = cursor.fetchall()
 
@@ -68,9 +72,10 @@ def update_fine_points(id_game, cursor):
 
 
 # today - надо указать день публикации баллов
-def update_point(id_game, cursor):
+def update_point(id_game, connection):
     """Обновляет все поинты игроков"""
 
+    cursor = connection.cursor()
     cursor.execute("SELECT * FROM all_game WHERE id = ?", (id_game,))
     if cursor.fetchone() is None:
         raise IdError(f"id.{id_game} - не существует")
@@ -124,6 +129,5 @@ def update_point(id_game, cursor):
 
     return
 
-
-update_point(20251, cursor)
-connection.close()
+# update_point(20251, cursor)
+# connection.close()
