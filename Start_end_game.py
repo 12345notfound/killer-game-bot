@@ -56,6 +56,9 @@ initializing_game({"id": 20250,
 
 def end_game(id_game, cursor):
     """Удаление всех данных об игре"""
+    cursor.execute("SELECT id FROM all_game WHERE id = ?", (id_game,))
+    if cursor.fetchone() is None:
+        raise IdError(f'Игра c id {id_game} не существует, операция удаления прервана')
 
     cursor.execute('DELETE FROM all_game WHERE id = ?', (id_game,))
     cursor.execute('DELETE FROM all_players WHERE id_game = ?', (id_game,))
