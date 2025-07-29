@@ -35,9 +35,9 @@ def kill_commit(kill, cursor):
     return
 
 
-kill_commit(
-    {"name_killer": "ятченко кирилл вечаславович", "name_victim": "русанов евгений васильевич"},
-    cursor)
+# kill_commit(
+#     {"name_killer": "ятченко кирилл вечаславович", "name_victim": "русанов евгений васильевич"},
+#     cursor)
 
 
 # fine = {"name_player": str,
@@ -63,6 +63,6 @@ def fine_commit(fine, cursor):
     connection.commit()
 
 
-fine_commit({"name_player": "ятченко кирилл вечаславович", "fine_point": -3, "comment": "потерял бумажку"}, cursor)
+# fine_commit({"name_player": "ятченко кирилл вечаславович", "fine_point": -3, "comment": "потерял бумажку"}, cursor)
 
 connection.close()

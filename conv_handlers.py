@@ -3,7 +3,7 @@ import os
 import telegram
 from telegram.ext import Application, MessageHandler, filters, ConversationHandler
 from telegram.ext import CommandHandler
-from telegram import ReplyKeyboardMarkup
+from telegram import ReplyKeyboardMarkup, InputFile
 
 from Start_end_game import initializing_game, end_game
 from Requests import *
@@ -203,8 +203,8 @@ async def leaderboard_state1(update: telegram.Update, context):
     game_id = update.message.text.strip()
     name_user = update.effective_user.id
     try:
-        filename = ranking_table(game_id, f"{str(name_user)}_{game_id}", cursor)
-        await update.message.reply_document(filename)
+        filename = "downloads/" + ranking_table(game_id, f"{str(name_user)}_{game_id}", cursor)
+        await update.message.reply_document(document=open(filename, 'rb'))
         os.remove(filename)
     except IdError as e:
         await update.message.reply_text(str(e.args[0]))
@@ -220,8 +220,8 @@ async def orderboard_state1(update: telegram.Update, context):
     game_id = update.message.text.strip()
     name_user = update.effective_user.id
     try:
-        filename = order_table(game_id, f"{str(name_user)}_{game_id}", cursor)
-        await update.message.reply_document(filename)
+        filename = "downloads/" + order_table(game_id, f"{str(name_user)}_{game_id}", cursor)
+        await update.message.reply_document(document=open(filename, 'rb'))
         os.remove(filename)
     except IdError as e:
         await update.message.reply_text(str(e.args[0]))

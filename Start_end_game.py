@@ -42,16 +42,16 @@ def initializing_game(info_game: dict, cursor):
     return
 
 
-initializing_game({"id": 20251,
-                   "name": "Старшие",
-                   "players": [{"full_name": "ятченко кирилл вечаславович", "class": 11},
-                               {"full_name": "русанов евгений васильевич", "class": 5},
-                               {"full_name": "ятченко евгений васильевич", "class": 5},
-                               {"full_name": "миронов евгений васильевич", "class": 5}]}, cursor)
-initializing_game({"id": 20250,
-                   "name": "Младшие",
-                   "players": [{"full_name": "кравченко кирилл вечаславович", "class": 11},
-                               {"full_name": "замоторин евгений васильевич", "class": 5}]}, cursor)
+# initializing_game({"id": 20251,
+#                    "name": "Старшие",
+#                    "players": [{"full_name": "ятченко кирилл вечаславович", "class": 11},
+#                                {"full_name": "русанов евгений васильевич", "class": 5},
+#                                {"full_name": "ятченко евгений васильевич", "class": 5},
+#                                {"full_name": "миронов евгений васильевич", "class": 5}]}, cursor)
+# initializing_game({"id": 20250,
+#                    "name": "Младшие",
+#                    "players": [{"full_name": "кравченко кирилл вечаславович", "class": 11},
+#                                {"full_name": "замоторин евгений васильевич", "class": 5}]}, cursor)
 
 
 def end_game(id_game, cursor):
