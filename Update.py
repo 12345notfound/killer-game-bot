@@ -82,8 +82,8 @@ def update_point(id_game, connection):
     cursor.execute("SELECT number_updates FROM all_game WHERE id = ?", (id_game,))
     today_number_update = cursor.fetchone()[0] + 1
 
-    update_death(id_game, cursor)
-    update_fine_points(id_game, cursor)
+    update_death(id_game, connection)
+    update_fine_points(id_game, connection)
 
     cursor.execute("SELECT * FROM all_kill WHERE id_game = ?", (id_game,))
     kills = cursor.fetchall()
@@ -102,7 +102,7 @@ def update_point(id_game, connection):
 
         full_point_player = 0
         # Очки за выживание
-        full_point_player += point_day(name_player, today_number_update, cursor)
+        full_point_player += point_day(name_player, today_number_update, connection)
         # Очки за убийства
         kills_player = murder_graph[name_player]['kills']
         death_player = murder_graph[name_player]["death_number_updates"]

@@ -178,6 +178,7 @@ async def register_fine(update: telegram.Update, context):
 #     except IdError as e:
 #         await update.message.reply_text(str(e.args[0]))
 async def update_day_state0(update: telegram.Update, context):
+    print(1)
     await update.message.reply_text("Введите id игры")
     return 1
 

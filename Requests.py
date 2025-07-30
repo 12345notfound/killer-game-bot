@@ -1,6 +1,7 @@
 # import sqlite3
 from CustomException import *
 
+
 # connection = sqlite3.connect("Killer_database.db")
 # cursor = connection.cursor()
 
@@ -15,8 +16,11 @@ def kill_commit(kill, connection):
     cursor = connection.cursor()
     name_killer, name_victim = kill["name_killer"], kill["name_victim"]
 
-    cursor.execute("SELECT * FROM all_players WHERE full_name = ? OR full_name = ?", (name_killer, name_victim))
-    if not cursor.fetchall() is None:
+    cursor.execute("SELECT * FROM all_players WHERE full_name = ?", (name_killer,))
+    result_1 = cursor.fetchall()
+    cursor.execute("SELECT * FROM all_players WHERE full_name = ?", (name_victim,))
+    result_2 = cursor.fetchall()
+    if result_2 and result_1:
         cursor.execute("SELECT id_game FROM all_players WHERE full_name = ?", (name_killer,))
         id_game = cursor.fetchone()[0]
     else:
@@ -63,7 +67,6 @@ def fine_commit(fine, connection):
                    (name_player, fine_point, comment, id_game))
 
     connection.commit()
-
 
 # fine_commit({"name_player": "ятченко кирилл вечаславович", "fine_point": -3, "comment": "потерял бумажку"}, cursor)
 
