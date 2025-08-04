@@ -74,20 +74,32 @@ async def new_game_state3(update: telegram.Update, context):
     get_file = await update.message.document.get_file()
     await get_file.download_to_drive(custom_path="downloads/temp.txt")
     file = open("downloads/temp.txt").readlines()
+    file = [x.strip('\n').strip(';') for x in file]
+    file = [x.strip() for x in file if x != '']
+    print(file)
     os.remove('downloads/temp.txt')
-    for line in file:
-        line = line.strip().split(',')
+    for i in range(len(file)):
+        file[i] = file[i].strip().split(";")
+        file[i] = [" ".join([name for name in file[i][1:]]).strip(), file[i][0]]
     names = [elem[0] for elem in file]
+    for name in names:
+        if names.count(name) != 1:
+            print(name)
+    print(names)
+    # await update.message.reply_text(name)
     if len(set(names)) != len(names):  # есть повторы
         await update.message.reply_text("В списке участников есть одинаковые записи,"
                                         " отправьте исправленный список")
         return 3  # возврат в то же состояние
 
     game_info = {"name": context.chat_data["game_name"],
-                 "start_day": str(update.message.date)[:10].replace('-', '.'),
+                 "id": context.chat_data['game_id'],
                  "players": [{"full_name": elem[0], "class": elem[1]} for elem in file]
                  }
-    initializing_game(game_info, connection)
+    try:
+        initializing_game(game_info, connection)
+    except IdError as e:
+        await update.message.reply_text(str(e.args[0]))
     await update.message.reply_text("Игра создана!"
                                     " Для регистрации килла используйте /kill, для завершения дня /update_day")
     return ConversationHandler.END
@@ -102,7 +114,7 @@ async def delete_game_state1(update: telegram.Update, context):
     game_id = update.message.text.strip()
     context.chat_data["delete_game_id"] = game_id
     await update.message.reply_text("Вы уверены, что хотите удалить эту игру?",
-                                    reply_markup=ReplyKeyboardMarkup(["Да", "Нет"]))
+                                    reply_markup=ReplyKeyboardMarkup([["Да", "Нет"]], one_time_keyboard=True))
     return 2
 
 
